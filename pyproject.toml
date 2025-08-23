@@ -2,39 +2,39 @@
  requires = ["setuptools>=68", "wheel"]
  build-backend = "setuptools.build_meta"
 
- [project]
- name = "django-admin-autocomplete-filters"
- dynamic = ["version"]
- description = "Render admin list filters with Django's autocomplete widget"
- readme = "README.md"
- requires-python = ">=3.10"
- license = { file = "LICENSE" }
- authors = [
-   { name = "Filipp Balakin", email = "filipp@balakin.ru" },
-   { name = "Farhan Khan" },
- ]
- maintainers = [
-   { name = "Filipp Balakin", email = "filipp@balakin.ru" },
- ]
+[project]
+name = "django-admin-autocomplete-filters"
+dynamic = ["version"]
+description = "Render admin list filters with Django's autocomplete widget"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "LGPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [
+  { name = "Filipp Balakin", email = "filipp@balakin.ru" },
+  { name = "Farhan Khan" },
+]
+maintainers = [
+  { name = "Filipp Balakin", email = "filipp@balakin.ru" },
+]
 dependencies = [
   "Django>=4.2,<6",
 ]
- classifiers = [
-   "Framework :: Django",
-   "Framework :: Django :: 4.2",
-   "Framework :: Django :: 5.0",
-   "Framework :: Django :: 5.1",
-   "Framework :: Django :: 5.2",
-   "Intended Audience :: Developers",
-   "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
-   "Operating System :: OS Independent",
-   "Programming Language :: Python :: 3",
-   "Programming Language :: Python :: 3.10",
-   "Programming Language :: Python :: 3.11",
-   "Programming Language :: Python :: 3.12",
-   "Topic :: Internet :: WWW/HTTP",
-   "Topic :: Software Development :: Libraries :: Python Modules",
- ]
+classifiers = [
+  "Framework :: Django",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.0",
+  "Framework :: Django :: 5.1",
+  "Framework :: Django :: 5.2",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [project.urls]
  Homepage = "https://github.com/Barsoomx/django-admin-autocomplete-filters"
@@ -51,7 +51,7 @@ dev = [
 ]
 
 [tool.setuptools]
-include-package-data = true
+ include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["admin_auto_filters*"]
