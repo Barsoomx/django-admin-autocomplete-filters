@@ -115,6 +115,8 @@ class AutocompleteFilterBase(admin.SimpleListFilter):
             # includes ManyToOneRel, ManyToManyRel
             # also includes OneToOneRel - not sure how this would be used
             related_model = field_desc.related_model
+        elif hasattr(field_desc, 'descriptor'):
+            return field_desc.descriptor.get_queryset()
         else:
             # primarily for ForeignKey/ForeignKeyDeferredAttribute
             # also includes ForwardManyToOneDescriptor, ForwardOneToOneDescriptor, ReverseOneToOneDescriptor
@@ -273,6 +275,7 @@ def AutocompleteFilterFactory(title, base_parameter_name, viewname='', use_pk_ex
             if viewname == '':
                 return super().get_autocomplete_url(request, model_admin)
             else:
-                return reverse(viewname)
+                # Pass the current GET parameters to the view. This allows to make co-dependent filters.
+                return reverse(viewname)  + "?" + request.GET.urlencode()
 
     return NewFilter
