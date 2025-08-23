@@ -23,4 +23,3 @@ Removed
 
 Notes
 - Python import path remains `admin_auto_filters` for backward compatibility.
-

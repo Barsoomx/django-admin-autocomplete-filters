@@ -117,3 +117,6 @@ venv.bak/
 
 # Diff files
 *.diff
+
+# Pre-commit
+.pre-commit-cache

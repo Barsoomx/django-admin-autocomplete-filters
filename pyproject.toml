@@ -16,9 +16,9 @@
  maintainers = [
    { name = "Filipp Balakin", email = "filipp@balakin.ru" },
  ]
- dependencies = [
-   "Django>=4.2",
- ]
+dependencies = [
+  "Django>=4.2,<6",
+]
  classifiers = [
    "Framework :: Django",
    "Framework :: Django :: 4.2",
@@ -39,6 +39,8 @@
 [project.urls]
  Homepage = "https://github.com/Barsoomx/django-admin-autocomplete-filters"
  Repository = "https://github.com/Barsoomx/django-admin-autocomplete-filters"
+ Changelog = "https://github.com/Barsoomx/django-admin-autocomplete-filters/blob/main/CHANGELOG.md"
+ Issues = "https://github.com/Barsoomx/django-admin-autocomplete-filters/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -48,11 +50,18 @@ dev = [
   "mypy>=1.8",
 ]
 
- [tool.setuptools]
- include-package-data = true
+[tool.setuptools]
+include-package-data = true
 
- [tool.setuptools.packages.find]
- include = ["admin_auto_filters*"]
+[tool.setuptools.packages.find]
+include = ["admin_auto_filters*"]
+
+[tool.setuptools.package-data]
+admin_auto_filters = [
+  "templates/**/*",
+  "static/**/*",
+  "py.typed",
+]
 
 [tool.setuptools.dynamic]
 version = { attr = "admin_auto_filters.__version__" }
@@ -63,7 +72,7 @@ version = { attr = "admin_auto_filters.__version__" }
    "W", "ARG", "ANN", "ASYNC", "B", "COM", "C4", "C90", "DTZ", "E", "ERA", "F", "UP", "T10", "T20", "Q", "S", "I", "N", "YTT", "PTH",
  ]
  lint.ignore = [
-   "UP037", "W291", "S324", "DTZ901", "DTZ006", "ANN401", "S101", "Q000", "DTZ001", "ARG001", "ARG002", "PTH118", "S105", "DTZ005", "ERA001", "PTH123", "S106", "DTZ007", "B017", "B904", "B005", "S113",
+   "UP037", "W291", "S324", "DTZ901", "DTZ006", "ANN401", "S101", "Q000", "Q003", "DTZ001", "ARG001", "ARG002", "PTH118", "S105", "DTZ005", "ERA001", "PTH123", "S106", "DTZ007", "B017", "B904", "B005", "S113", "COM812",
  ]
  lint.exclude = [
    ".git", ".mypy_cache", ".ruff_cache", "__pycache__", "*/admin_ext/**", "*/migrations/**", "templates", "*/fixtures.py", "*/fixtures/**",

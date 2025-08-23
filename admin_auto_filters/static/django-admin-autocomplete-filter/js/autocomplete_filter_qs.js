@@ -22,7 +22,7 @@ function search_replace(name, value) {
     }
     return hash_to_search(new_search_hash);
   }
-  
+
   function search_add(name, value) {
     var new_search_hash = search_to_hash();
     if ( ! (decodeURIComponent(name) in new_search_hash)) {
@@ -42,7 +42,7 @@ function search_remove(name, value) {
     }
     return hash_to_search(new_search_hash);
 }
-  
+
 function search_to_hash() {
     var h={};
     if (window.location.search == undefined || window.location.search.length < 1) { return h;}
@@ -59,7 +59,7 @@ function search_to_hash() {
     }
     return h;
 }
-  
+
 function hash_to_search(h) {
     var search = String("?");
     for (var k in h) {

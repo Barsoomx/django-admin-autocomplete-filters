@@ -16,13 +16,20 @@ Overview:
 Django comes preshipped with an admin panel which is a great utility to create quick CRUD's.
 Version 2.0 came with a much needed [`autocomplete_fields`](https://docs.djangoproject.com/en/2.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields "autocomplete_fields") property which uses a select2 widget to load the options asynchronously.  We leverage this in `django-admin-list-filter`.
 
-    
+
 
 Requirements:
 -------------
 
 - Django >= 4.2
 - Python >= 3.10
+
+Supported Versions
+------------------
+- Python: 3.10, 3.11, 3.12
+- Django: 4.2, 5.0, 5.1, 5.2
+
+See the CI badge for the full matrix.
 
 
 Features:
@@ -89,6 +96,16 @@ After following these steps you may see the filter as:
 ![](admin_auto_filters/media/screenshot1.png)
 
 ![](admin_auto_filters/media/screenshot2.png)
+
+Release Process
+---------------
+- Bump `admin_auto_filters.__version__` and update `CHANGELOG.md`.
+- Ensure CI is green on `main`.
+- Create a tag `vX.Y.Z` and push; the GitHub Actions workflow will build and publish to PyPI via trusted publishing.
+
+Contributing
+------------
+See `CONTRIBUTING.md` for local setup, linting, typing, tests, and pre-commit hooks.
 
 
 Functionality to provide a custom view for search:

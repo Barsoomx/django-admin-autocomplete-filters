@@ -3,3 +3,4 @@ include LICENSE
 recursive-include docs *
 recursive-include admin_auto_filters/static *
 recursive-include admin_auto_filters/templates *
+include admin_auto_filters/py.typed

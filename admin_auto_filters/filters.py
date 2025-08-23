@@ -24,8 +24,8 @@ from django.forms.widgets import Media
 from django.urls import reverse
 
 # Django does not expose precise typing for these in stubs
-MEDIA_TYPES: tuple[str, ...] = ("css", "js")
-media_property = getattr(forms_widgets, "media_property")  # type: ignore[attr-defined]
+MEDIA_TYPES: tuple[str, ...] = ('css', 'js')
+media_property = forms_widgets.media_property  # type: ignore[attr-defined]
 
 
 class AutocompleteSelectMixin:
