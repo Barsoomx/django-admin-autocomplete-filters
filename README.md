@@ -1,8 +1,12 @@
-[![PyPI version](https://badge.fury.io/py/django-admin-autocomplete-filter.svg?kill_cache=1)](https://badge.fury.io/py/django-admin-autocomplete-filter)
+[![PyPI version](https://badge.fury.io/py/django-admin-autocomplete-filters.svg)](https://badge.fury.io/py/django-admin-autocomplete-filters)
+[![Tests](https://github.com/Barsoomx/django-admin-autocomplete-filters/actions/workflows/tests.yml/badge.svg)](https://github.com/Barsoomx/django-admin-autocomplete-filters/actions/workflows/tests.yml)
+[![Ruff](https://img.shields.io/badge/lint-ruff-46a2f1.svg)](https://github.com/astral-sh/ruff)
 
 
-Django Admin Autocomplete Filter
-================================
+Django Admin Autocomplete Filters
+=================================
+Maintained continuation of the original project by Farhan Khan: https://github.com/farhan0581/django-admin-autocomplete-filter
+This fork modernizes packaging (PEP 621), adds CI, and supports Django 4.2–5.2 and Python 3.10+.
 A simple Django app to render list filters in django admin using an autocomplete widget. This app is heavily inspired by [dal-admin-filters.](https://github.com/shamanu4/dal_admin_filters)
 
 
@@ -17,7 +21,8 @@ Version 2.0 came with a much needed [`autocomplete_fields`](https://docs.djangop
 Requirements:
 -------------
 
-Requires Django version >= 2.0
+- Django >= 4.2
+- Python >= 3.10
 
 
 Features:
@@ -34,8 +39,8 @@ Installation:
 
 You can install it via pip.  To get the latest version clone this repo.
 
-```shell script
-pip install django-admin-autocomplete-filter
+```shell
+pip install django-admin-autocomplete-filters
 ```
 
 Add `admin_auto_filters` to your `INSTALLED_APPS` inside settings.py of your project.
@@ -81,9 +86,9 @@ class AlbumAdmin(admin.ModelAdmin):
 
 After following these steps you may see the filter as:
 
-![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot1.png)
+![](admin_auto_filters/media/screenshot1.png)
 
-![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot2.png)
+![](admin_auto_filters/media/screenshot2.png)
 
 
 Functionality to provide a custom view for search:
