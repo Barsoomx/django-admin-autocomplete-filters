@@ -10,8 +10,8 @@
  requires-python = ">=3.10"
  license = { file = "LICENSE" }
  authors = [
-   { name = "Farhan Khan" },
    { name = "Filipp Balakin", email = "filipp@balakin.ru" },
+   { name = "Farhan Khan" },
  ]
  maintainers = [
    { name = "Filipp Balakin", email = "filipp@balakin.ru" },
@@ -43,6 +43,9 @@
 [project.optional-dependencies]
 dev = [
   "ruff==0.11.7",
+  "django-stubs>=5.0.0",
+  "django-stubs-ext>=5.0.0",
+  "mypy>=1.8",
 ]
 
  [tool.setuptools]
@@ -84,3 +87,7 @@ no_implicit_optional = false
 ignore_missing_imports = true
 show_error_codes = true
 exclude = "^(tests|docs)/"
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "tests.tests.settings"

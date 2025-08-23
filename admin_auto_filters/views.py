@@ -9,7 +9,7 @@ from django.http import JsonResponse
 class AutocompleteJsonView(Base):
     """Overriding django admin's AutocompleteJsonView"""
 
-    model_admin: Any | None = None
+    model_admin: Any = None
 
     @staticmethod
     def display_text(obj: Any) -> str:

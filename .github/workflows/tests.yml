@@ -15,8 +15,8 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - name: Install Ruff and Mypy
-        run: pip install ruff==0.11.7 mypy
+      - name: Install dev tools (ruff, mypy, stubs)
+        run: pip install .[dev] mypy
       - name: Ruff check
         run: ruff check .
       - name: Ruff format check

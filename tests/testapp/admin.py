@@ -6,8 +6,7 @@ from typing import Any
 
 from django import forms
 from django.contrib import admin
-from django.shortcuts import reverse
-from django.urls import path
+from django.urls import path, reverse
 
 from admin_auto_filters.filters import AutocompleteFilter, AutocompleteFilterFactory
 

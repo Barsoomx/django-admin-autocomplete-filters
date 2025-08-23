@@ -19,8 +19,13 @@ from django.db.models.fields.related_descriptors import (
     ManyToManyDescriptor,
     ReverseManyToOneDescriptor,
 )
-from django.forms.widgets import MEDIA_TYPES, Media, media_property
-from django.shortcuts import reverse
+from django.forms import widgets as forms_widgets
+from django.forms.widgets import Media
+from django.urls import reverse
+
+# Django does not expose precise typing for these in stubs
+MEDIA_TYPES: tuple[str, ...] = ("css", "js")
+media_property = getattr(forms_widgets, "media_property")  # type: ignore[attr-defined]
 
 
 class AutocompleteSelectMixin:
@@ -114,7 +119,7 @@ class AutocompleteFilterBase(admin.SimpleListFilter):
             attrs['data-Placeholder'] = self.title
         value = self.used_parameters.get(self.parameter_name, '')
         if value:
-            value = self.normalize_value(value)
+            value = self.normalize_value(str(value))
         self.rendered_widget = field.widget.render(
             name=self.parameter_name,
             value=value,
@@ -141,7 +146,10 @@ class AutocompleteFilterBase(admin.SimpleListFilter):
             # primarily for ForeignKey/ForeignKeyDeferredAttribute
             # also includes ForwardManyToOneDescriptor, ForwardOneToOneDescriptor, ReverseOneToOneDescriptor
             return field_desc.get_queryset()
-        return related_model.objects.get_queryset()
+        # Handle self-referential relations reported as string
+        if isinstance(related_model, str) and related_model == 'self':
+            return model._default_manager.get_queryset()
+        return related_model._default_manager.get_queryset()
 
     def get_form_field(self) -> Any:
         """Return the type of form field to be used."""
