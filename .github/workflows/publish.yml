@@ -5,13 +5,14 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: read
-  id-token: write  # Required for PyPI trusted publishing
-
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/django-admin-autocomplete-filters
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -28,7 +29,7 @@ jobs:
       - name: Check distribution metadata
         run: twine check dist/*
       - name: Publish to PyPI (trusted publishing)
-        uses: pypa/gh-action-pypi-publish@v1.12.2
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist
           # To use API token instead of OIDC, set PYPI_API_TOKEN secret and uncomment:
