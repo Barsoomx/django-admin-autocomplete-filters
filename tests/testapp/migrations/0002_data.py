@@ -9,10 +9,10 @@ def load_fixture(apps, schema_editor):
 
 
 def unload_fixture(apps, schema_editor):
-    Book = apps.get_model("location", "Book")
-    Collection = apps.get_model("location", "Collection")
-    Food = apps.get_model("location", "Food")
-    Person = apps.get_model("location", "Person")
+    Book = apps.get_model('location', 'Book')
+    Collection = apps.get_model('location', 'Collection')
+    Food = apps.get_model('location', 'Food')
+    Person = apps.get_model('location', 'Person')
     Book.objects.all().delete()
     Collection.objects.all().delete()
     Food.objects.all().delete()
@@ -20,7 +20,6 @@ def unload_fixture(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('testapp', '0001_initial'),
     ]

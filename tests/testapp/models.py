@@ -6,13 +6,13 @@ from django.db import models
 class Food(models.Model):
     name = models.CharField(max_length=100)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'Food#' + str(self.id)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def alternate_name(self):
+    def alternate_name(self) -> str:
         return str(self.name).upper()
 
 
@@ -20,10 +20,10 @@ class Collection(models.Model):
     name = models.CharField(max_length=100)
     curators = models.ManyToManyField('Person', blank=True)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'Collection#' + str(self.id)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -33,15 +33,21 @@ class Person(models.Model):
     twin = models.OneToOneField('self', on_delete=models.CASCADE, blank=True, null=True, related_name='rev_twin')
     siblings = models.ManyToManyField('self', blank=True)
     favorite_food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True)
-    least_favorite_food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True,
-                                            related_name='food_is_least_fav', related_query_name='people_with_this_least_fav_food')
+    least_favorite_food = models.ForeignKey(
+        Food,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='food_is_least_fav',
+        related_query_name='people_with_this_least_fav_food',
+    )
     curated_collections = models.ManyToManyField(Collection, blank=True, db_table=Collection.curators.field.db_table)
     favorite_book = models.ForeignKey('Book', on_delete=models.CASCADE, blank=True, null=True, related_name='people_with_this_fav_book')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'Person#' + str(self.id)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -56,8 +62,8 @@ class Book(models.Model):
     author = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True, null=True)
     coll = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=True, null=True)  # just for test purposes
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'Book#' + str(self.isbn)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title

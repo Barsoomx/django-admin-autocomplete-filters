@@ -1,13 +1,18 @@
 """Defines the admin interface for the test app, including inlines and filters."""
 
+from __future__ import annotations
+
+from typing import Any
+
 from django import forms
 from django.contrib import admin
 from django.shortcuts import reverse
 from django.urls import path
-from admin_auto_filters.filters import AutocompleteFilter, AutocompleteFilterFactory
-from .models import Food, Person, Collection, Book
-from .views import FoodsThatAreFavorites
 
+from admin_auto_filters.filters import AutocompleteFilter, AutocompleteFilterFactory
+
+from .models import Book, Collection, Food, Person
+from .views import FoodsThatAreFavorites
 
 # hard code some user constants (must match fixture)
 BASIC_USERNAME = 'bu'  # password is 'bu'
@@ -64,14 +69,14 @@ class RevTwinFilter(AutocompleteFilter):
 
 
 class FriendFriendFilter(AutocompleteFilter):
-    title = 'best friend\'s best friend (manual)'
+    title = "best friend's best friend (manual)"
     field_name = 'best_friend'
     rel_model = Person
     parameter_name = 'best_friend__best_friend'
 
 
 class FriendFoodFilter(AutocompleteFilter):
-    title = 'best friend\'s favorite food (manual)'
+    title = "best friend's favorite food (manual)"
     field_name = 'favorite_food'
     rel_model = Person
     parameter_name = 'best_friend__favorite_food'
@@ -85,7 +90,7 @@ class SiblingsFilter(AutocompleteFilter):
 
 
 class FoodChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
+    def label_from_instance(self, obj: Any) -> str:
         return obj.alternate_name()
 
 
@@ -96,7 +101,7 @@ class FoodFilter(AutocompleteFilter):
     parameter_name = 'favorite_food'
     form_field = FoodChoiceField
 
-    def get_autocomplete_url(self, request, model_admin):
+    def get_autocomplete_url(self, request: Any, model_admin: Any) -> str:
         return reverse('admin:foods_that_are_favorites')
 
 
@@ -183,7 +188,7 @@ class CustomAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('custom.css',)}
 
-    def get_list_filter(self, request):
+    def get_list_filter(self, request: Any) -> list[Any]:
         if request.user.username == BASIC_USERNAME:
             return self.list_filter
         elif request.user.username == SHORTCUT_USERNAME:
@@ -228,8 +233,7 @@ class CollectionAdmin(CustomAdmin):
     ]
     ordering = ['id']
     readonly_fields = ['id']
-    search_fields = ['id', 'name', 'curators__name',
-                     'book__title', 'book__author__name']
+    search_fields = ['id', 'name', 'curators__name', 'book__title', 'book__author__name']
 
 
 @admin.register(Person)
@@ -256,8 +260,8 @@ class PersonAdmin(CustomAdmin):
         AutocompleteFilterFactory('best friend (auto)', 'best_friend'),
         AutocompleteFilterFactory('twin (auto)', 'twin'),
         AutocompleteFilterFactory('reverse twin (auto)', 'rev_twin'),
-        AutocompleteFilterFactory('best friend\'s best friend (auto)', 'best_friend__best_friend'),
-        AutocompleteFilterFactory('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
+        AutocompleteFilterFactory("best friend's best friend (auto)", 'best_friend__best_friend'),
+        AutocompleteFilterFactory("best friend's favorite food (auto)", 'best_friend__favorite_food'),
         AutocompleteFilterFactory('siblings (auto)', 'siblings'),
         AutocompleteFilterFactory('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites', label_by='alternate_name'),
         AutocompleteFilterFactory('best friend of (auto)', 'person'),
@@ -268,15 +272,16 @@ class PersonAdmin(CustomAdmin):
     ]
     ordering = ['id']
     readonly_fields = ['id']
-    search_fields = ['id', 'name', 'best_friend__name',
-                     'favorite_food__name', 'siblings__name']
+    search_fields = ['id', 'name', 'best_friend__name', 'favorite_food__name', 'siblings__name']
 
-    def get_urls(self):
+    def get_urls(self) -> list[Any]:
         urls = super().get_urls()
         custom_urls = [
-            path('foods_that_are_favorites/',
-                 self.admin_site.admin_view(FoodsThatAreFavorites.as_view(model_admin=self)),
-                 name='foods_that_are_favorites'),
+            path(
+                'foods_that_are_favorites/',
+                self.admin_site.admin_view(FoodsThatAreFavorites.as_view(model_admin=self)),
+                name='foods_that_are_favorites',
+            ),
         ]
         return custom_urls + urls
 
