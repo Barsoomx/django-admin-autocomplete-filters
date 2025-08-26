@@ -1,0 +1,13 @@
+version: 2
+
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    open-pull-requests-limit: 15
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Etc/UTC"
+    labels:
+      - "poetry"
+      - "dependencies"
