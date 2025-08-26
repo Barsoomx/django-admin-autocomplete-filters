@@ -59,6 +59,14 @@ poetry add django-admin-autocomplete-filters@latest
 
 Add `admin_auto_filters` to your `INSTALLED_APPS` inside settings.py of your project.
 
+Breaking Changes compared to original project:
+----------------
+
+- CustomSearchView registration (Django 4.2+): pass the admin site instead of a model admin instance. See examples below.
+  - Before: `CustomSearchView.as_view(model_admin=self)`
+  - Now: `CustomSearchView.as_view(admin_site=self.admin_site)`
+  - Rationale: the view uses Django’s `process_request()` to infer the target model admin from query params and performs core permission/validation checks. The admin site wrapper (`self.admin_site.admin_view(...)`) continues to enforce staff/CSRF safeguards.
+
 
 Usage:
 ------
