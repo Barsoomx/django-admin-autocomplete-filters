@@ -7,7 +7,7 @@ class Food(models.Model):
     name = models.CharField(max_length=100)
 
     def __repr__(self) -> str:
-        return 'Food#' + str(self.id)
+        return 'Food#' + str(self.pk)
 
     def __str__(self) -> str:
         return self.name
@@ -21,7 +21,7 @@ class Collection(models.Model):
     curators = models.ManyToManyField('Person', blank=True)
 
     def __repr__(self) -> str:
-        return 'Collection#' + str(self.id)
+        return 'Collection#' + str(self.pk)
 
     def __str__(self) -> str:
         return self.name
@@ -41,11 +41,13 @@ class Person(models.Model):
         related_name='food_is_least_fav',
         related_query_name='people_with_this_least_fav_food',
     )
-    curated_collections = models.ManyToManyField(Collection, blank=True, db_table=Collection.curators.field.db_table)
+    # this fails in django 5.0; for those who need it, see https://code.djangoproject.com/ticket/897#comment:51 and https://code.djangoproject.com/ticket/35056
+    # i won't be touching it here, because it's such an edge case, hence the type: ignore[attr-defined]
+    curated_collections = models.ManyToManyField(Collection, blank=True, db_table=Collection.curators.field.db_table)  # type: ignore[attr-defined]
     favorite_book = models.ForeignKey('Book', on_delete=models.CASCADE, blank=True, null=True, related_name='people_with_this_fav_book')
 
     def __repr__(self) -> str:
-        return 'Person#' + str(self.id)
+        return 'Person#' + str(self.pk)
 
     def __str__(self) -> str:
         return self.name
@@ -53,6 +55,7 @@ class Person(models.Model):
 
 # Use this and curated_collections.db_table to set up reverse M2M
 # See https://code.djangoproject.com/ticket/897
+# noinspection PyProtectedMember
 Person.curated_collections.through._meta.managed = False
 
 

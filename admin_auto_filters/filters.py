@@ -268,7 +268,7 @@ def _get_rel_model(model: Any, parameter_name: str) -> Any | None:
 def AutocompleteFilterFactory(  # noqa: N802 - keep public API name
     title: str,
     base_parameter_name: str,
-    viewname: str = ADMIN_AUTOCOMPLETE_VIEW_NAME,
+    viewname: str | None = ADMIN_AUTOCOMPLETE_VIEW_NAME,
     use_pk_exact: bool = False,
     label_by: Callable[[Any], str] | str = str,
 ) -> type[AutocompleteFilterBase]:
@@ -309,10 +309,11 @@ def AutocompleteFilterFactory(  # noqa: N802 - keep public API name
             self.title = title
 
         def get_autocomplete_url(self, request: Any, model_admin: Any) -> str | None:
-            if not viewname:
-                # if not truthy, fallback to default django admin get_autocomplete_url
-                return super().get_autocomplete_url(request, model_admin)
-            else:
+            if viewname:
                 return reverse(viewname)
+
+            # If viewname is not set (set to None or '' explicitly),
+            # fallback to default Django admin `get_autocomplete_url`;
+            return super().get_autocomplete_url(request, model_admin)
 
     return NewFilter
