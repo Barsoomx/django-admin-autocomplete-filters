@@ -1,4 +1,4 @@
-[![PyPI version](https://badge.fury.io/py/django-admin-autocomplete-filters.svg)](https://badge.fury.io/py/django-admin-autocomplete-filters)
+[![PyPI version](https://badge.fury.io/py/django-admin-autocomplete-filters.svg?icon=si%3Apython)](https://badge.fury.io/py/django-admin-autocomplete-filters)
 [![Tests](https://github.com/Barsoomx/django-admin-autocomplete-filters/actions/workflows/tests.yml/badge.svg)](https://github.com/Barsoomx/django-admin-autocomplete-filters/actions/workflows/tests.yml)
 [![Ruff](https://img.shields.io/badge/lint-ruff-46a2f1.svg)](https://github.com/astral-sh/ruff)
 
