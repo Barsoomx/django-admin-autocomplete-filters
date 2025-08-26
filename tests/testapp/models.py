@@ -67,3 +67,51 @@ class Book(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+
+# Showcase models for README/tests
+class Member(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self) -> str:  # pragma: no cover - trivial
+        return self.name
+
+
+class Device(models.Model):
+    slug = models.CharField(max_length=100)
+    members = models.ManyToManyField(Member, related_name='devices', blank=True)
+
+    def __str__(self) -> str:  # pragma: no cover - trivial
+        return self.slug
+
+
+class PingLog(models.Model):
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='pings')
+    ip = models.CharField(max_length=64, blank=True, default='')
+
+    def __str__(self) -> str:  # pragma: no cover - trivial
+        return f'{self.device} {self.ip}'
+
+
+class Coupon(models.Model):
+    code = models.CharField('Code', max_length=64, unique=True, blank=True, db_index=True)
+
+    def __str__(self) -> str:  # pragma: no cover
+        return self.code
+
+
+class BugReport(models.Model):
+    title = models.CharField(max_length=1024)
+    reward_coupon = models.ForeignKey(Coupon, on_delete=models.DO_NOTHING, null=True, blank=True)
+
+    def __str__(self) -> str:  # pragma: no cover
+        return self.title
+
+
+class CouponUser(models.Model):
+    coupon = models.ForeignKey(Coupon, related_name='users', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey('auth.User', null=True, related_name='coupons', on_delete=models.SET_NULL)
+    redeemed_at = models.DateTimeField('Used', auto_now_add=True)
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f'{self.coupon} -> {self.user}'

@@ -187,6 +187,83 @@ class AlbumAdmin(admin.ModelAdmin):
 ```
 
 
+More Examples
+-------------
+
+Nested relations and reverse lookups are supported out of the box.
+
+1) Filter a log model by users related through a device
+
+Models:
+
+```python
+class Member(models.Model):
+    name = models.CharField(max_length=100)
+
+class Device(models.Model):
+    slug = models.CharField(max_length=100)
+    members = models.ManyToManyField(Member, related_name='devices', blank=True)
+
+class PingLog(models.Model):
+    device = models.ForeignKey(Device, related_name='pings', on_delete=models.CASCADE)
+    ip = models.CharField(max_length=64, blank=True, default='')
+```
+
+Admin:
+
+```python
+@admin.register(PingLog)
+class PingLogAdmin(admin.ModelAdmin):
+    list_filter = [
+        # Drill-down M2M: filter PingLog by Device.members
+        AutocompleteFilterFactory('Member', 'device__members'),
+    ]
+
+@admin.register(Member)
+class MemberAdmin(admin.ModelAdmin):
+    search_fields = ['name']  # required for admin autocomplete
+```
+
+2) Filter coupons by redeemers and by bug reports that rewarded them
+
+Models:
+
+```python
+class Coupon(models.Model):
+    code = models.CharField('Code', max_length=64, unique=True, blank=True, db_index=True)
+
+class CouponUser(models.Model):
+    coupon = models.ForeignKey(Coupon, related_name='users', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey('auth.User', related_name='coupons', null=True, on_delete=models.SET_NULL)
+    redeemed_at = models.DateTimeField('Used', auto_now_add=True)
+
+class BugReport(models.Model):
+    title = models.CharField(max_length=1024)
+    reward_coupon = models.ForeignKey(Coupon, on_delete=models.DO_NOTHING, null=True, blank=True)
+```
+
+Admin:
+
+```python
+@admin.register(BugReport)
+class BugReportAdmin(admin.ModelAdmin):
+    search_fields = ['title']
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_filter = [
+        # Through model to auth.User
+        AutocompleteFilterFactory('User', 'users__user'),
+        # Reverse FK using default related_query_name 'bugreport'
+        AutocompleteFilterFactory('Bug Report', 'bugreport'),
+    ]
+```
+
+Notes:
+- For each remote model you filter by (e.g., `Member`, `BugReport`), its `ModelAdmin` must define `search_fields` so the admin autocomplete endpoint works (Django 4.2+ requirement).
+- By default, `AutocompleteFilterFactory` points to the package’s auto-registered admin view, available at `admin:admin-autocomplete`.
+
+
 Customizing widget text
 -----------------------
 
