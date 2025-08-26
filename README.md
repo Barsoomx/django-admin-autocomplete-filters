@@ -197,6 +197,8 @@ Nested relations and reverse lookups are supported out of the box.
 Models:
 
 ```python
+from django.db import models
+
 class Member(models.Model):
     name = models.CharField(max_length=100)
 
@@ -212,6 +214,10 @@ class PingLog(models.Model):
 Admin:
 
 ```python
+from django.contrib import admin
+from admin_auto_filters.filters import AutocompleteFilterFactory
+from tests.testapp.models import Member, PingLog
+
 @admin.register(PingLog)
 class PingLogAdmin(admin.ModelAdmin):
     list_filter = [
@@ -229,6 +235,8 @@ class MemberAdmin(admin.ModelAdmin):
 Models:
 
 ```python
+from django.db import models
+
 class Coupon(models.Model):
     code = models.CharField('Code', max_length=64, unique=True, blank=True, db_index=True)
 
@@ -245,6 +253,10 @@ class BugReport(models.Model):
 Admin:
 
 ```python
+from django.contrib import admin
+from admin_auto_filters.filters import AutocompleteFilterFactory
+from tests.testapp.models import BugReport, Coupon
+
 @admin.register(BugReport)
 class BugReportAdmin(admin.ModelAdmin):
     search_fields = ['title']
@@ -261,7 +273,7 @@ class CouponAdmin(admin.ModelAdmin):
 
 Notes:
 - For each remote model you filter by (e.g., `Member`, `BugReport`), its `ModelAdmin` must define `search_fields` so the admin autocomplete endpoint works (Django 4.2+ requirement).
-- By default, `AutocompleteFilterFactory` points to the package’s auto-registered admin view, available at `admin:admin-autocomplete`.
+- By default, `AutocompleteFilterFactory` points to the package’s auto-registered admin view, available at `admin:admin-autocomplete`. (otherwise it fails due to `get_limit_choices_to` being required on non-fk Fields). You can override this by specifying a custom view, as shown above.
 
 
 Customizing widget text
