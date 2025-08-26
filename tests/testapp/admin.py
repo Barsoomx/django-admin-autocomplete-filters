@@ -10,7 +10,17 @@ from django.urls import path, reverse
 
 from admin_auto_filters.filters import AutocompleteFilter, AutocompleteFilterFactory
 
-from .models import Book, Collection, Food, Person
+from .models import (
+    Book,
+    BugReport,
+    Collection,
+    Coupon,
+    Device,
+    Food,
+    Member,
+    Person,
+    PingLog,
+)
 from .views import FoodsThatAreFavorites
 
 # hard code some user constants (must match fixture)
@@ -278,7 +288,7 @@ class PersonAdmin(CustomAdmin):
         custom_urls = [
             path(
                 'foods_that_are_favorites/',
-                self.admin_site.admin_view(FoodsThatAreFavorites.as_view(model_admin=self)),
+                self.admin_site.admin_view(FoodsThatAreFavorites.as_view(admin_site=self.admin_site)),
                 name='foods_that_are_favorites',
             ),
         ]
@@ -304,3 +314,44 @@ class BookAdmin(CustomAdmin):
     ]
     ordering = ['isbn']
     search_fields = ['isbn', 'title', 'author__name', 'coll__name']
+
+
+# Showcase admins for README/tests
+@admin.register(Member)
+class MemberAdmin(CustomAdmin):
+    list_display = ['id', 'name']
+    search_fields = ['name']
+    list_filter = [
+        AutocompleteFilterFactory('Device', 'devices'),
+    ]
+
+
+@admin.register(Device)
+class DeviceAdmin(CustomAdmin):
+    list_display = ['id', 'slug']
+    search_fields = ['slug']
+
+
+@admin.register(PingLog)
+class PingLogAdmin(CustomAdmin):
+    list_display = ['id', 'device', 'ip']
+    search_fields = ['ip', 'device__slug']
+    list_filter = [
+        AutocompleteFilterFactory('Member', 'device__members'),
+    ]
+
+
+@admin.register(Coupon)
+class CouponAdmin(CustomAdmin):
+    list_display = ['id', 'code']
+    search_fields = ['code']
+    list_filter = [
+        AutocompleteFilterFactory('User', 'users__user'),
+        AutocompleteFilterFactory('Bug Report', 'bugreport'),
+    ]
+
+
+@admin.register(BugReport)
+class BugReportAdmin(CustomAdmin):
+    list_display = ['id', 'title', 'reward_coupon']
+    search_fields = ['title']

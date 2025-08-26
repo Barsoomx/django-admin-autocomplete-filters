@@ -4,6 +4,26 @@ Changelog
 All notable changes to this project will be documented in this file.
 This project adheres to Keep a Changelog and semantic versioning.
 
+0.8.0rc2 — 2025-08-26
+---------------------
+
+Added
+- Auto-registered admin autocomplete endpoint under the default admin site via `AppConfig.ready()`; no changes needed in project `urls.py`.
+- Public constants for endpoint configuration:
+  - `ADMIN_AUTOCOMPLETE_VIEW_SLUG = 'admin-autocomplete'`
+  - `ADMIN_AUTOCOMPLETE_VIEW_NAME = f'admin:{ADMIN_AUTOCOMPLETE_VIEW_SLUG}'`
+- `AutocompleteFilterFactory` now defaults to `viewname=ADMIN_AUTOCOMPLETE_VIEW_NAME`.
+- Showcase models, admin registrations, and tests demonstrating nested relations (FK/M2M) and reverse lookups.
+- Tests asserting the auto-registered endpoint returns results and a test for URL registration.
+- Documentation: added “More Examples” and repository custom instructions (`copilot-instructions.md`).
+
+Changed
+- `AutocompleteJsonView` behavior aligned with Django 4.2+ contract: uses `process_request()` and `serialize_result()`; applies `source_field.get_limit_choices_to()` consistently.
+- Synthetic tests updated to include required Django 4.2+ query params (`app_label`, `model_name`, `field_name`).
+
+Deprecated/Breaking
+- Custom search views should be registered with `admin_site` (e.g., `CustomSearchView.as_view(admin_site=self.admin_site)`) instead of passing `model_admin=self`. See README “Breaking Changes”.
+
 0.6.0rc2 — 2025-08-23
 ---------------------
 

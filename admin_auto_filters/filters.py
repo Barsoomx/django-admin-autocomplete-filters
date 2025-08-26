@@ -23,6 +23,8 @@ from django.forms import widgets as forms_widgets
 from django.forms.widgets import Media
 from django.urls import reverse
 
+from . import ADMIN_AUTOCOMPLETE_VIEW_NAME
+
 # Django does not expose precise typing for these in stubs
 MEDIA_TYPES: tuple[str, ...] = ('css', 'js')
 media_property = forms_widgets.media_property  # type: ignore[attr-defined]
@@ -266,7 +268,7 @@ def _get_rel_model(model: Any, parameter_name: str) -> Any | None:
 def AutocompleteFilterFactory(  # noqa: N802 - keep public API name
     title: str,
     base_parameter_name: str,
-    viewname: str = '',
+    viewname: str | None = ADMIN_AUTOCOMPLETE_VIEW_NAME,
     use_pk_exact: bool = False,
     label_by: Callable[[Any], str] | str = str,
 ) -> type[AutocompleteFilterBase]:
@@ -307,10 +309,11 @@ def AutocompleteFilterFactory(  # noqa: N802 - keep public API name
             self.title = title
 
         def get_autocomplete_url(self, request: Any, model_admin: Any) -> str | None:
-            if viewname == '':
-                return super().get_autocomplete_url(request, model_admin)
-            else:
-                # Pass the current GET parameters to the view. This allows to make co-dependent filters.
-                return reverse(viewname) + '?' + request.GET.urlencode()
+            if viewname:
+                return reverse(viewname)
+
+            # If viewname is not set (set to None or '' explicitly),
+            # fallback to default Django admin `get_autocomplete_url`;
+            return super().get_autocomplete_url(request, model_admin)
 
     return NewFilter
