@@ -18,7 +18,7 @@ class Food(models.Model):
 
 class Collection(models.Model):
     name = models.CharField(max_length=100)
-    curators = models.ManyToManyField('Person', blank=True)
+    curators = models.ManyToManyField('Person', blank=True)  # type: ignore[var-annotated]
 
     def __repr__(self) -> str:
         return 'Collection#' + str(self.pk)
