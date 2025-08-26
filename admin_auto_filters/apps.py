@@ -15,6 +15,7 @@ class AdminAutoFiltersConfig(AppConfig):
         from django.contrib import admin
         from django.urls import path
 
+        from . import ADMIN_AUTOCOMPLETE_VIEW_SLUG
         from .views import AutocompleteJsonView
 
         site = admin.site
@@ -29,9 +30,9 @@ class AdminAutoFiltersConfig(AppConfig):
             urls = original_get_urls()
             extra = [
                 path(
-                    'admin-autocomplete/',
+                    f'{ADMIN_AUTOCOMPLETE_VIEW_SLUG}/',
                     site.admin_view(AutocompleteJsonView.as_view(admin_site=site)),
-                    name='admin-autocomplete',
+                    name=ADMIN_AUTOCOMPLETE_VIEW_SLUG,
                 ),
             ]
             # Prepend so our route takes precedence if names collide (they shouldn't)

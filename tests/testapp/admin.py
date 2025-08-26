@@ -278,7 +278,7 @@ class PersonAdmin(CustomAdmin):
         custom_urls = [
             path(
                 'foods_that_are_favorites/',
-                self.admin_site.admin_view(FoodsThatAreFavorites.as_view(model_admin=self)),
+                self.admin_site.admin_view(FoodsThatAreFavorites.as_view(admin_site=self.admin_site)),
                 name='foods_that_are_favorites',
             ),
         ]

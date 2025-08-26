@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import json
-import unittest
 from typing import Any
 from urllib.parse import urlencode
 
-import django
 from django.contrib.admin.utils import flatten
 from django.contrib.auth.models import User
 from django.core import exceptions
@@ -67,7 +65,13 @@ class RootTestCase:
         Test that custom autocomplete endpoint functions and returns proper values.
         """
         url = reverse('admin:foods_that_are_favorites')
-        response = self.client.get(url, follow=False)
+        # Django 4.2+ AutocompleteJsonView expects app_label/model_name/field_name
+        query_params = {
+            'app_label': Person._meta.app_label,
+            'model_name': Person._meta.model_name,
+            'field_name': 'favorite_food',  # FK from Person -> Food
+        }
+        response = self.client.get(url + '?' + urlencode(query_params), follow=False)
         self.assertEqual(response.status_code, 200, msg=str(url))
         data = json.loads(response.content)
         texts = {item['text'] for item in data['results']}
@@ -91,18 +95,6 @@ class RootTestCase:
                     msg_prefix=str(url),
                 )
 
-    @unittest.skipIf(django.VERSION >= (3, 2), reason='URL moved in Django 3.2')
-    def test_admin_autocomplete_load_pre_32(self) -> None:
-        """
-        Test that the admin autocomplete endpoint loads on Django < 3.2.
-        """
-        for model_name in MODEL_NAMES:
-            with self.subTest(model_name=model_name):
-                url = reverse(f'admin:testapp_{model_name}_autocomplete')
-                response = self.client.get(url, follow=False)
-                self.assertContains(response, '"results"')
-
-    @unittest.skipIf(django.VERSION < (3, 2), reason='URL moved in Django 3.2')
     def test_admin_autocomplete_load_32_plus(self) -> None:
         """
         Test that the admin autocomplete endpoint loads on Django >= 3.2.
