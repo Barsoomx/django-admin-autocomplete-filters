@@ -19,7 +19,8 @@ class AutocompleteJsonView(Base):
         return str(obj)
 
     def get(self, request: Any, *args: Any, **kwargs: Any) -> JsonResponse:
-        if not hasattr(self, 'model_admin') and hasattr(self, 'process_request'):
+        # If model_admin isn't provided (e.g., global endpoint), resolve via process_request
+        if getattr(self, 'model_admin', None) is None and hasattr(self, 'process_request'):
             self.term, self.model_admin, self.source_field, _ = self.process_request(request)
         else:
             self.term = request.GET.get('term', '')

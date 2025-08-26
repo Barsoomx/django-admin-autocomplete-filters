@@ -180,6 +180,23 @@ class RootTestCase:
         except BaseException as e:
             self.fail(str(e))
 
+    def test_admin_autocomplete_custom_url_is_registered(self) -> None:
+        """
+        Ensure our app registers admin:admin-autocomplete automatically via AppConfig.ready().
+        The endpoint should behave like the built-in admin:autocomplete and return JSON.
+        """
+        # Pick a known model/field pair present in admin autocomplete
+        model, field_name = (Person, 'best_friend')
+        url = reverse('admin:admin-autocomplete')
+        query_params = {
+            'app_label': model._meta.app_label,
+            'model_name': model._meta.model_name,
+            'field_name': field_name,
+        }
+        response = self.client.get(url + '?' + urlencode(query_params), follow=False)
+        self.assertEqual(response.status_code, 200, msg=str(url))
+        self.assertIn('"results"', response.content.decode('utf-8'))
+
 
 @tag('basic')
 class BasicTestCase(RootTestCase, TestCase):
