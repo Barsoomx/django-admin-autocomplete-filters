@@ -5,8 +5,10 @@
 
 Django Admin Autocomplete Filters
 =================================
-Maintained continuation of the original project by Farhan Khan: https://github.com/farhan0581/django-admin-autocomplete-filter
+Maintained continuation of the [original project by Farhan Khan](https://github.com/farhan0581/django-admin-autocomplete-filter)
+
 This fork modernizes packaging (PEP 621), adds CI, and supports Django 4.2–5.2 and Python 3.10+.
+
 A simple Django app to render list filters in django admin using an autocomplete widget. This app is heavily inspired by [dal-admin-filters.](https://github.com/shamanu4/dal_admin_filters)
 
 
@@ -14,6 +16,7 @@ Overview:
 ---------
 
 Django comes preshipped with an admin panel which is a great utility to create quick CRUD's.
+
 Version 2.0 came with a much needed [`autocomplete_fields`](https://docs.djangoproject.com/en/2.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields "autocomplete_fields") property which uses a select2 widget to load the options asynchronously.  We leverage this in `django-admin-list-filter`.
 
 
@@ -44,10 +47,14 @@ Features:
 Installation:
 -------------
 
-You can install it via pip.  To get the latest version clone this repo.
+You can install it via pip or poetry.  To get the latest version clone this repo.
 
 ```shell
 pip install django-admin-autocomplete-filters
+```
+or
+```shell
+poetry add django-admin-autocomplete-filters@latest
 ```
 
 Add `admin_auto_filters` to your `INSTALLED_APPS` inside settings.py of your project.
@@ -111,46 +118,15 @@ See `CONTRIBUTING.md` for local setup, linting, typing, tests, and pre-commit ho
 Functionality to provide a custom view for search:
 --------------------------------------------------
 
-You can also register your custom view instead of using Django admin's `search_results` to control the results in the autocomplete. For this you will need to create your custom view and register the URL in your admin class as shown below:
-
-In your `views.py`:
+You can also register your custom view instead of using Django admin's `search_results` to control the results in the autocomplete.
+For this you will need to create your custom view and register the URL in your admin class as shown below:
+In your `views.py`/`admin.py`/'filters.py':
 
 ```python
 from admin_auto_filters.views import AutocompleteJsonView
-
-
-class CustomSearchView(AutocompleteJsonView):
-    def get_queryset(self):
-        """
-           your custom logic goes here.
-        """
-        queryset = super().get_queryset()
-        queryset = queryset.order_by('name')
-        return queryset
-```
-
-After this, register this view in your admin class:
-
-```python
 from django.contrib import admin
 from django.urls import path
 
-
-class AlbumAdmin(admin.ModelAdmin):
-    list_filter = [ArtistFilter]
-
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path('custom_search/', self.admin_site.admin_view(CustomSearchView.as_view(model_admin=self)),
-                 name='custom_search'),
-        ]
-        return custom_urls + urls
-```
-
-Finally, just tell the filter class to use this new view:
-
-```python
 from django.shortcuts import reverse
 from admin_auto_filters.filters import AutocompleteFilter
 
@@ -161,6 +137,31 @@ class ArtistFilter(AutocompleteFilter):
 
     def get_autocomplete_url(self, request, model_admin):
         return reverse('admin:custom_search')
+
+
+class CustomSearchView(AutocompleteJsonView):
+    def get_queryset(self):
+        """
+           your custom logic goes here.
+        """
+        queryset = super().get_queryset()
+        queryset = queryset.order_by('name')
+        return queryset
+
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [
+        ArtistFilter,
+    ]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+            'custom_search/', self.admin_site.admin_view(CustomSearchView.as_view(admin_site=self.admin_site)), name='custom_search'
+            ),
+        ]
+        return custom_urls + urls
 ```
 
 
@@ -207,6 +208,7 @@ class CustomSearchView(AutocompleteJsonView):
 
     def get_queryset(self):
         """As above..."""
+        ...
 ```
 
 Then use either of two options to customize the text.
@@ -265,8 +267,9 @@ Contributing:
 
 This project is a combined effort of a lot of selfless developers who try to make things easier. Your contribution is most welcome.
 
-Please make a pull-request to the branch `pre_release`, make sure your branch does not have any conflicts, and clearly mention the problems or improvements your PR is addressing.
+Please make a pull-request to the branch `master`, make sure your branch does not have any conflicts, and clearly mention the problems or improvements your PR is addressing.
 
+Verify that tests and linting pass in the Pull Request checks.
 
 License:
 --------
