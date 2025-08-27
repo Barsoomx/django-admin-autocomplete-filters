@@ -1,4 +1,4 @@
-__version__ = '0.8.0rc3'
+__version__ = '0.8.0'
 
 # Public constants for the admin autocomplete integration
 ADMIN_AUTOCOMPLETE_VIEW_SLUG = 'admin-autocomplete'
