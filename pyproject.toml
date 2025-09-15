@@ -43,7 +43,7 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = [
-  "ruff==0.12.10",
+  "ruff==0.13.0",
   "django-stubs>=5.0.0",
   "django-stubs-ext>=5.0.0",
   "mypy>=1.8",
