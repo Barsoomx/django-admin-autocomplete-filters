@@ -4,8 +4,8 @@ Changelog
 All notable changes to this project will be documented in this file.
 This project adheres to Keep a Changelog and semantic versioning.
 
-Unreleased
-----------
+0.8.1 — 2026-09-23
+------------------
 
 Fixed
 - Resolve ForeignKey and OneToOne filter querysets without calling instance-dependent relation descriptor methods, preserving base-manager behavior.
