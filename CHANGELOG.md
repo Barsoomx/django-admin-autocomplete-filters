@@ -4,6 +4,17 @@ Changelog
 All notable changes to this project will be documented in this file.
 This project adheres to Keep a Changelog and semantic versioning.
 
+Unreleased
+----------
+
+Fixed
+- Resolve ForeignKey and OneToOne filter querysets without calling instance-dependent relation descriptor methods, preserving base-manager behavior.
+- Pin each CI job to its declared Django series.
+
+Added
+- Django 6.0 and 6.1 support, with Python 3.13 and 3.14 in the supported CI combinations.
+- Regression coverage for relation querysets and selected widget values when the default manager filters out related objects.
+
 0.8.0rc2 — 2025-08-26
 ---------------------
 

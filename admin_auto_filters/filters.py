@@ -17,7 +17,6 @@ from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related_descriptors import (
     ForwardManyToOneDescriptor,
-    ForwardOneToOneDescriptor,
     ManyToManyDescriptor,
     ReverseManyToOneDescriptor,
     ReverseOneToOneDescriptor,
@@ -146,12 +145,11 @@ class AutocompleteFilterBase(admin.SimpleListFilter):
             # also includes OneToOneRel - not sure how this would be used
             related_model = field_desc.related_model
         elif isinstance(field_desc, ReverseOneToOneDescriptor):
-            related_model = field_desc.related.related_model
-        elif isinstance(
-            field_desc,
-            ForwardManyToOneDescriptor | ForwardOneToOneDescriptor,
-        ):
-            related_model = field_desc.field.remote_field.model
+            # Preserve the base manager used by the former descriptor.get_queryset().
+            return field_desc.related.related_model._base_manager.all()
+        elif isinstance(field_desc, ForwardManyToOneDescriptor):
+            # Also covers ForwardOneToOneDescriptor, which inherits this descriptor.
+            return field_desc.field.remote_field.model._base_manager.all()
         elif hasattr(field_desc, 'descriptor'):
             return field_desc.descriptor.get_queryset()
         else:

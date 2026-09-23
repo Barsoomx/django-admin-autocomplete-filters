@@ -7,7 +7,7 @@ Django Admin Autocomplete Filters
 =================================
 Maintained continuation of the [original project by Farhan Khan](https://github.com/farhan0581/django-admin-autocomplete-filter)
 
-This fork modernizes packaging (PEP 621), adds CI, and supports Django 4.2–5.2 and Python 3.10+.
+This fork modernizes packaging (PEP 621), adds CI, and supports Django 4.2–6.1 and Python 3.10+.
 
 A simple Django app to render list filters in django admin using an autocomplete widget. This app is heavily inspired by [dal-admin-filters.](https://github.com/shamanu4/dal_admin_filters)
 
@@ -24,13 +24,13 @@ Version 2.0 came with a much needed [`autocomplete_fields`](https://docs.djangop
 Requirements:
 -------------
 
-- Django >= 4.2
+- Django >= 4.2, < 6.2
 - Python >= 3.10
 
 Supported Versions
 ------------------
-- Python: 3.10, 3.11, 3.12
-- Django: 4.2, 5.0, 5.1, 5.2
+- Python: 3.10, 3.11, 3.12, 3.13, 3.14
+- Django: 4.2, 5.0, 5.1, 5.2, 6.0, 6.1 (Django 6.x requires Python 3.12+)
 
 See the CI badge for the full matrix.
 
