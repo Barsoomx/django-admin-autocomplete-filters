@@ -16,8 +16,10 @@ from django.contrib.admin.widgets import (
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related_descriptors import (
+    ForwardManyToOneDescriptor,
     ManyToManyDescriptor,
     ReverseManyToOneDescriptor,
+    ReverseOneToOneDescriptor,
 )
 from django.forms import widgets as forms_widgets
 from django.forms.widgets import Media
@@ -142,11 +144,16 @@ class AutocompleteFilterBase(admin.SimpleListFilter):
             # includes ManyToOneRel, ManyToManyRel
             # also includes OneToOneRel - not sure how this would be used
             related_model = field_desc.related_model
+        elif isinstance(field_desc, ReverseOneToOneDescriptor):
+            # Preserve the base manager used by the former descriptor.get_queryset().
+            return field_desc.related.related_model._base_manager.all()
+        elif isinstance(field_desc, ForwardManyToOneDescriptor):
+            # Also covers ForwardOneToOneDescriptor, which inherits this descriptor.
+            return field_desc.field.remote_field.model._base_manager.all()
         elif hasattr(field_desc, 'descriptor'):
             return field_desc.descriptor.get_queryset()
         else:
-            # primarily for ForeignKey/ForeignKeyDeferredAttribute
-            # also includes ForwardManyToOneDescriptor, ForwardOneToOneDescriptor, ReverseOneToOneDescriptor
+            # Fallback
             return field_desc.get_queryset()
         # Handle self-referential relations reported as string
         if isinstance(related_model, str) and related_model == 'self':
@@ -184,6 +191,9 @@ class AutocompleteFilterBase(admin.SimpleListFilter):
         return value
 
     def queryset(self, request: Any, queryset: Any) -> Any:
+        if self.parameter_name is None:
+            self.parameter_name = self.generate_parameter_name()
+
         value = self.value()
         if not value:
             return queryset

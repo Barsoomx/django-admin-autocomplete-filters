@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import json
 from typing import Any
+from unittest import mock
 from urllib.parse import urlencode
 
 from django.contrib.admin.utils import flatten
 from django.contrib.auth.models import User
 from django.core import exceptions
-from django.test import TestCase, tag
+from django.db import models
+from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor, ReverseOneToOneDescriptor
+from django.test import SimpleTestCase, TestCase, tag
+from django.test.utils import isolate_apps
 from django.urls import reverse
 
 from admin_auto_filters import filters
@@ -200,6 +204,119 @@ class BasicTestCase(RootTestCase, TestCase):
 class ShortcutTestCase(RootTestCase, TestCase):
     def setUp(self) -> None:
         self.client.force_login(self.shortcut_user)
+
+
+class GetQuerysetForFieldTests(TestCase):
+    """Regression tests for resolving relation descriptors to querysets."""
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.basic_user = User.objects.get(username=BASIC_USERNAME)
+        cls.food = Food.objects.create(name='Descriptor food')
+        cls.last_twin = Person.objects.create(name='Last descriptor twin')
+        cls.hidden_person = Person.objects.create(name='Hidden descriptor person', twin=cls.last_twin)
+        cls.owner = Person.objects.create(
+            name='Descriptor owner',
+            best_friend=cls.hidden_person,
+            twin=cls.hidden_person,
+            favorite_food=cls.food,
+        )
+        cls.book = Book.objects.create(isbn=900001, title='Descriptor book', author=cls.owner)
+        cls.member = Member.objects.create(name='Descriptor member')
+        cls.device = Device.objects.create(slug='descriptor-device')
+        cls.device.members.add(cls.member)
+
+    def setUp(self) -> None:
+        self.client.force_login(self.basic_user)
+
+    def test_relation_directions_return_expected_models_and_rows(self) -> None:
+        cases = (
+            (Person, 'favorite_food', Food, self.food),
+            (Person, 'best_friend', Person, self.hidden_person),
+            (Person, 'twin', Person, self.hidden_person),
+            (Person, 'rev_twin', Person, self.hidden_person),
+            (Device, 'members', Member, self.member),
+            (Member, 'devices', Device, self.device),
+            (Person, 'book_set', Book, self.book),
+            (Person, 'book', Book, self.book),
+        )
+
+        for model, field_name, expected_model, expected_row in cases:
+            with self.subTest(model=model.__name__, field_name=field_name):
+                queryset = filters.AutocompleteFilter.get_queryset_for_field(model, field_name)
+                self.assertIs(queryset.model, expected_model)
+                self.assertTrue(queryset.filter(pk=expected_row.pk).exists())
+
+    def test_singular_descriptors_use_base_manager_without_descriptor_queryset(self) -> None:
+        class VisiblePersonManager(models.Manager[Person]):
+            hidden_pk: int
+
+            def get_queryset(self) -> Any:
+                return super().get_queryset().exclude(pk=self.hidden_pk)
+
+        manager = VisiblePersonManager()
+        manager.model = Person
+        manager.hidden_pk = self.hidden_person.pk
+        url = reverse('admin:testapp_person_changelist')
+        cases = (
+            ('best_friend', self.owner.name),
+            ('twin', self.owner.name),
+            ('rev_twin', self.last_twin.name),
+        )
+
+        with (
+            mock.patch.object(Person._meta, 'default_manager', manager),
+            mock.patch.object(
+                ForwardManyToOneDescriptor,
+                'get_queryset',
+                create=True,
+                side_effect=AssertionError('descriptor method must not be called'),
+            ),
+            mock.patch.object(
+                ReverseOneToOneDescriptor,
+                'get_queryset',
+                create=True,
+                side_effect=AssertionError('descriptor method must not be called'),
+            ),
+        ):
+            self.assertFalse(manager.get_queryset().filter(pk=self.hidden_person.pk).exists())
+            for field_name, result_name in cases:
+                with self.subTest(field_name=field_name):
+                    queryset = filters.AutocompleteFilter.get_queryset_for_field(Person, field_name)
+                    self.assertTrue(queryset.filter(pk=self.hidden_person.pk).exists())
+
+                    response = self.client.get(url, {field_name: self.hidden_person.pk})
+                    self.assertEqual(response.status_code, 200)
+                    self.assertContains(response, result_name)
+                    self.assertContains(
+                        response,
+                        f'<option value="{self.hidden_person.pk}" selected>{self.hidden_person.name}</option>',
+                        html=True,
+                    )
+
+
+class NonSelfOneToOneDirectionTests(SimpleTestCase):
+    @isolate_apps('tests.testapp')
+    def test_forward_and_reverse_relations_return_the_other_model(self) -> None:
+        class TemporaryProfile(models.Model):
+            class Meta:
+                app_label = 'testapp'
+
+        class TemporaryAccount(models.Model):
+            profile = models.OneToOneField(
+                TemporaryProfile,
+                on_delete=models.CASCADE,
+                related_name='account',
+            )
+
+            class Meta:
+                app_label = 'testapp'
+
+        forward_queryset = filters.AutocompleteFilter.get_queryset_for_field(TemporaryAccount, 'profile')
+        reverse_queryset = filters.AutocompleteFilter.get_queryset_for_field(TemporaryProfile, 'account')
+
+        self.assertIs(forward_queryset.model, TemporaryProfile)
+        self.assertIs(reverse_queryset.model, TemporaryAccount)
 
 
 class ShowcaseTests(TestCase):
